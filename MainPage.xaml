@@ -32,18 +32,10 @@
 
         <Grid Grid.Row="2" Padding="16,0,16,16">
             <Grid x:Name="MapPanel" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="12">
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-                    <VerticalStackLayout Spacing="2" VerticalOptions="Center">
-                        <Label x:Name="FloorHeading" FontSize="19" FontAttributes="Bold" TextColor="#18362F" />
-                        <Label Text="Shelf map" FontSize="12" TextColor="#526B5D" />
-                    </VerticalStackLayout>
-                    <Button Grid.Column="1" Text="−" Clicked="OnZoomOutClicked" WidthRequest="42"
-                            HeightRequest="42" CornerRadius="5" BackgroundColor="#DAE6DF"
-                            TextColor="#18362F" SemanticProperties.Description="Zoom map out" />
-                    <Button Grid.Column="2" Text="+" Clicked="OnZoomInClicked" WidthRequest="42"
-                            HeightRequest="42" CornerRadius="5" BackgroundColor="#DAE6DF"
-                            TextColor="#18362F" SemanticProperties.Description="Zoom map in" />
-                </Grid>
+                <VerticalStackLayout Grid.Row="0" Spacing="2">
+                    <Label x:Name="FloorHeading" FontSize="19" FontAttributes="Bold" TextColor="#18362F" />
+                    <Label Text="Shelf map" FontSize="12" TextColor="#526B5D" />
+                </VerticalStackLayout>
 
                 <Border x:Name="SelectedShelfPanel" Grid.Row="1" IsVisible="False" Padding="14,12"
                         BackgroundColor="#DDECE1" Stroke="#93BA9E" StrokeShape="RoundRectangle 5">
@@ -123,28 +115,18 @@
             </CollectionView>
         </Grid>
 
-        <Grid x:Name="ExpandedMap" Grid.RowSpan="3" RowDefinitions="Auto,*"
+        <Grid x:Name="ExpandedMap" Grid.RowSpan="3"
               IsVisible="False" SafeAreaEdges="None" BackgroundColor="#122820">
-            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="8" Padding="16,12">
-                <Label x:Name="ExpandedFloorHeading" VerticalOptions="Center" FontSize="16"
-                       FontAttributes="Bold" TextColor="White" />
-                <Button Grid.Column="1" Text="−" Clicked="OnExpandedZoomOutClicked"
-                        WidthRequest="44" HeightRequest="44" CornerRadius="5"
-                        BackgroundColor="#DAE6DF" TextColor="#18362F"
-                        SemanticProperties.Description="Zoom full-screen map out" />
-                <Button Grid.Column="2" Text="+" Clicked="OnExpandedZoomInClicked"
-                        WidthRequest="44" HeightRequest="44" CornerRadius="5"
-                        BackgroundColor="#DAE6DF" TextColor="#18362F"
-                        SemanticProperties.Description="Zoom full-screen map in" />
-                <Button Grid.Column="3" Text="Close" Clicked="OnCloseExpandedMapClicked"
-                        HeightRequest="44" CornerRadius="5" BackgroundColor="#DAE6DF"
-                        TextColor="#18362F" />
-            </Grid>
-            <ScrollView x:Name="ExpandedScroller" Grid.Row="1" Orientation="Both">
+            <ScrollView x:Name="ExpandedScroller" Orientation="Both">
                 <Image x:Name="ExpandedFloorMap" Aspect="AspectFit"
                        HorizontalOptions="Center" VerticalOptions="Center"
                        SemanticProperties.Description="Full-screen map of the selected library floor" />
             </ScrollView>
+            <Button Text="×" Clicked="OnCloseExpandedMapClicked" WidthRequest="48"
+                    HeightRequest="48" FontSize="26" CornerRadius="5" Margin="0,16,16,0"
+                    HorizontalOptions="End" VerticalOptions="Start"
+                    BackgroundColor="#DAE6DF" TextColor="#18362F"
+                    SemanticProperties.Description="Close full-screen map" />
         </Grid>
     </Grid>
 </ContentPage>

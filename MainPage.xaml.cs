@@ -20,6 +20,9 @@ public partial class MainPage : ContentPage
 	private double expandedZoom = 1;
 #if ANDROID
 	private Android.Content.PM.ScreenOrientation previousOrientation;
+	private MainActivity? touchActivity;
+	private Android.Views.ScaleGestureDetector? scaleDetector;
+	private bool mapTouchActive;
 #endif
 	private const string WikiBase = "https://librarian-tidy-up-the-arcane-library.fandom.com/wiki/";
 
@@ -30,6 +33,10 @@ public partial class MainPage : ContentPage
 		ShowFloor(1);
 		SizeChanged += (_, _) => UpdateMapSize();
 		ExpandedScroller.SizeChanged += (_, _) => UpdateExpandedMapSize();
+#if ANDROID
+		Loaded += OnPageLoaded;
+		Unloaded += OnPageUnloaded;
+#endif
 		_ = LoadBooksAsync();
 	}
 
@@ -120,7 +127,6 @@ public partial class MainPage : ContentPage
 		currentFloor = floor;
 		FloorHeading.Text = floor == 1 ? "First floor" : "Second floor";
 		FloorMap.Source = floor == 1 ? "first_floor.jpg" : "second_floor.jpg";
-		ExpandedFloorHeading.Text = FloorHeading.Text;
 		ExpandedFloorMap.Source = FloorMap.Source;
 		UpdateMapSize();
 		FirstFloorButton.BackgroundColor = Color.FromArgb(floor == 1 ? "#18362F" : "#DAE6DF");
@@ -142,17 +148,100 @@ public partial class MainPage : ContentPage
 
 	private void OnBackToResultsClicked(object? sender, EventArgs e) => SearchBooks();
 
-	private void OnZoomOutClicked(object? sender, EventArgs e)
+	private void ZoomMap(bool expanded, double factor, double focusX, double focusY)
 	{
-		mapZoom = Math.Max(1, mapZoom - 0.5);
-		UpdateMapSize();
+		var scroller = expanded ? ExpandedScroller : MapScroller;
+		var image = expanded ? ExpandedFloorMap : FloorMap;
+		var oldZoom = expanded ? expandedZoom : mapZoom;
+		var nextZoom = Math.Clamp(oldZoom * factor, 1, 4);
+		if (nextZoom == oldZoom || image.WidthRequest <= 0 || image.HeightRequest <= 0)
+			return;
+
+		var originX = (focusX + scroller.ScrollX - image.X) / image.WidthRequest;
+		var originY = (focusY + scroller.ScrollY - image.Y) / image.HeightRequest;
+		if (expanded)
+		{
+			expandedZoom = nextZoom;
+			UpdateExpandedMapSize();
+		}
+		else
+		{
+			mapZoom = nextZoom;
+			UpdateMapSize();
+		}
+
+		var imageX = Math.Max(0, (scroller.Width - image.WidthRequest) / 2);
+		var imageY = Math.Max(0, (scroller.Height - image.HeightRequest) / 2);
+		var scrollX = Math.Clamp(imageX + originX * image.WidthRequest - focusX,
+			0, Math.Max(0, image.WidthRequest - scroller.Width));
+		var scrollY = Math.Clamp(imageY + originY * image.HeightRequest - focusY,
+			0, Math.Max(0, image.HeightRequest - scroller.Height));
+		scroller.Dispatcher.Dispatch(() => _ = scroller.ScrollToAsync(scrollX, scrollY, false));
 	}
 
-	private void OnZoomInClicked(object? sender, EventArgs e)
+#if ANDROID
+	private void OnPageLoaded(object? sender, EventArgs e)
 	{
-		mapZoom = Math.Min(4, mapZoom + 0.5);
-		UpdateMapSize();
+		if (Platform.CurrentActivity is not MainActivity activity)
+			return;
+
+		touchActivity = activity;
+		scaleDetector = new Android.Views.ScaleGestureDetector(activity, new MapScaleListener(this));
+		activity.TouchDispatched += OnTouchDispatched;
 	}
+
+	private void OnPageUnloaded(object? sender, EventArgs e)
+	{
+		if (touchActivity is not null)
+			touchActivity.TouchDispatched -= OnTouchDispatched;
+		touchActivity = null;
+		scaleDetector?.Dispose();
+		scaleDetector = null;
+	}
+
+	private void OnTouchDispatched(Android.Views.MotionEvent motionEvent)
+	{
+		if (motionEvent.ActionMasked == Android.Views.MotionEventActions.Down)
+		{
+			var scroller = ExpandedMap.IsVisible ? ExpandedScroller : MapScroller;
+			var nativeView = scroller.Handler?.PlatformView as Android.Views.View;
+			var location = new int[2];
+			nativeView?.GetLocationInWindow(location);
+			mapTouchActive = nativeView is not null && (ExpandedMap.IsVisible || MapPanel.IsVisible)
+				&& motionEvent.GetX() >= location[0] && motionEvent.GetX() < location[0] + nativeView.Width
+				&& motionEvent.GetY() >= location[1] && motionEvent.GetY() < location[1] + nativeView.Height;
+		}
+
+		if (mapTouchActive)
+			scaleDetector?.OnTouchEvent(motionEvent);
+
+		if (motionEvent.ActionMasked is Android.Views.MotionEventActions.Up or Android.Views.MotionEventActions.Cancel)
+			mapTouchActive = false;
+	}
+
+	private sealed class MapScaleListener(MainPage page) : Android.Views.ScaleGestureDetector.SimpleOnScaleGestureListener
+	{
+		public override bool OnScaleBegin(Android.Views.ScaleGestureDetector? detector) => true;
+
+		public override bool OnScale(Android.Views.ScaleGestureDetector? detector)
+		{
+			if (detector is null)
+				return false;
+
+			var expanded = page.ExpandedMap.IsVisible;
+			var scroller = expanded ? page.ExpandedScroller : page.MapScroller;
+			if (scroller.Handler?.PlatformView is not Android.Views.View nativeView)
+				return false;
+
+			var location = new int[2];
+			nativeView.GetLocationInWindow(location);
+			var density = nativeView.Resources?.DisplayMetrics?.Density ?? 1;
+			page.ZoomMap(expanded, detector.ScaleFactor,
+				(detector.FocusX - location[0]) / density, (detector.FocusY - location[1]) / density);
+			return true;
+		}
+	}
+#endif
 
 	private void UpdateMapSize()
 	{
@@ -170,6 +259,7 @@ public partial class MainPage : ContentPage
 	{
 		expandedZoom = 1;
 		ExpandedMap.IsVisible = true;
+		_ = ExpandedScroller.ScrollToAsync(0, 0, false);
 #if ANDROID
 		if (Platform.CurrentActivity is { } activity && activity.Window is { } window)
 		{
@@ -204,18 +294,6 @@ public partial class MainPage : ContentPage
 
 		CloseExpandedMap();
 		return true;
-	}
-
-	private void OnExpandedZoomOutClicked(object? sender, EventArgs e)
-	{
-		expandedZoom = Math.Max(1, expandedZoom - 0.5);
-		UpdateExpandedMapSize();
-	}
-
-	private void OnExpandedZoomInClicked(object? sender, EventArgs e)
-	{
-		expandedZoom = Math.Min(4, expandedZoom + 0.5);
-		UpdateExpandedMapSize();
 	}
 
 	private void UpdateExpandedMapSize()
