@@ -11,7 +11,7 @@ A .NET MAUI companion for finding books in the Arcane Library from [*Librarian: 
 ## Screenshots
 
 <!-- markdownlint-disable MD033 -->
-<img src="screenshots/first-floor.png" alt="First-floor shelf map in MAUILibrarian" width="280"> <img src="screenshots/search-results.png" alt="Book search results showing floor and shelf locations" width="280"> <img src="screenshots/fullscreen-map.png" alt="Full-screen floor map, rotated into a portrait screenshot" width="280">
+<img src="screenshots/first-floor.png" alt="First-floor shelf map in MAUILibrarian" width="200"> <img src="screenshots/search-results.png" alt="Book search results showing floor and shelf locations" width="200"> <img src="screenshots/fullscreen-map.png" alt="Full-screen floor map, rotated into a portrait screenshot" width="200">
 <!-- markdownlint-enable MD033 -->
 
 ## Build and run
