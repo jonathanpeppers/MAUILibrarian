@@ -1,10 +1,10 @@
 <Shell
     x:Class="asdfadfasddf.AppShell"
     xmlns:local="clr-namespace:asdfadfasddf"
-    Title="asdfadfasddf">
+    Title="Arcane Shelf Finder">
 
     <ShellContent
-        Title="Home"
+        Title="Shelf finder"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 
