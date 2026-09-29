@@ -1,12 +1,18 @@
 # MAUILibrarian
 
-A .NET MAUI companion for finding books in the Arcane Library from *Librarian: Tidy Up the Arcane Library*. Search by title, section, or shelf to see a book's floor and shelf location, then consult the floor map.
+A .NET MAUI companion for finding books in the Arcane Library from [*Librarian: Tidy Up the Arcane Library*](https://store.steampowered.com/app/4197610/Librarian_Tidy_Up_the_Arcane_Library/). Search by title, section, or shelf to see a book's floor and shelf location, then consult the floor map.
 
 ## Features
 
 - Search the bundled book catalog across both library floors, including partial titles and section names.
 - Switch between first- and second-floor maps and view them full-screen; pinch to zoom on Android.
 - Browse the catalog and maps offline. Source and credit links open in a browser when connected.
+
+## Screenshots
+
+<!-- markdownlint-disable MD033 -->
+<img src="screenshots/first-floor.png" alt="First-floor shelf map in MAUILibrarian" width="280"> <img src="screenshots/search-results.png" alt="Book search results showing floor and shelf locations" width="280">
+<!-- markdownlint-enable MD033 -->
 
 ## Build and run
 
