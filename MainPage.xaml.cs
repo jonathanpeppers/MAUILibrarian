@@ -17,6 +17,10 @@ public partial class MainPage : ContentPage
 	private int currentFloor = 1;
 	private double mapWidth;
 	private double mapZoom = 1;
+	private double expandedZoom = 1;
+#if ANDROID
+	private Android.Content.PM.ScreenOrientation previousOrientation;
+#endif
 	private const string WikiBase = "https://librarian-tidy-up-the-arcane-library.fandom.com/wiki/";
 
 	public MainPage()
@@ -25,6 +29,7 @@ public partial class MainPage : ContentPage
 		ResultsList.ItemsSource = results;
 		ShowFloor(1);
 		SizeChanged += (_, _) => UpdateMapSize();
+		ExpandedScroller.SizeChanged += (_, _) => UpdateExpandedMapSize();
 		_ = LoadBooksAsync();
 	}
 
@@ -115,6 +120,8 @@ public partial class MainPage : ContentPage
 		currentFloor = floor;
 		FloorHeading.Text = floor == 1 ? "First floor" : "Second floor";
 		FloorMap.Source = floor == 1 ? "first_floor.jpg" : "second_floor.jpg";
+		ExpandedFloorHeading.Text = FloorHeading.Text;
+		ExpandedFloorMap.Source = FloorMap.Source;
 		UpdateMapSize();
 		FirstFloorButton.BackgroundColor = Color.FromArgb(floor == 1 ? "#18362F" : "#DAE6DF");
 		SecondFloorButton.BackgroundColor = Color.FromArgb(floor == 2 ? "#18362F" : "#DAE6DF");
@@ -157,6 +164,70 @@ public partial class MainPage : ContentPage
 		mapWidth = availableWidth;
 		FloorMap.WidthRequest = mapWidth * mapZoom;
 		FloorMap.HeightRequest = mapHeight;
+	}
+
+	private void OnMapTapped(object? sender, TappedEventArgs e)
+	{
+		expandedZoom = 1;
+		ExpandedMap.IsVisible = true;
+#if ANDROID
+		if (Platform.CurrentActivity is { } activity && activity.Window is { } window)
+		{
+			previousOrientation = activity.RequestedOrientation;
+			activity.RequestedOrientation = Android.Content.PM.ScreenOrientation.Landscape;
+			new AndroidX.Core.View.WindowInsetsControllerCompat(window, window.DecorView)
+				.Hide(AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars());
+		}
+#endif
+		UpdateExpandedMapSize();
+	}
+
+	private void OnCloseExpandedMapClicked(object? sender, EventArgs e) => CloseExpandedMap();
+
+	private void CloseExpandedMap()
+	{
+		ExpandedMap.IsVisible = false;
+#if ANDROID
+		if (Platform.CurrentActivity is { } activity && activity.Window is { } window)
+		{
+			new AndroidX.Core.View.WindowInsetsControllerCompat(window, window.DecorView)
+				.Show(AndroidX.Core.View.WindowInsetsCompat.Type.SystemBars());
+			activity.RequestedOrientation = previousOrientation;
+		}
+#endif
+	}
+
+	protected override bool OnBackButtonPressed()
+	{
+		if (!ExpandedMap.IsVisible)
+			return base.OnBackButtonPressed();
+
+		CloseExpandedMap();
+		return true;
+	}
+
+	private void OnExpandedZoomOutClicked(object? sender, EventArgs e)
+	{
+		expandedZoom = Math.Max(1, expandedZoom - 0.5);
+		UpdateExpandedMapSize();
+	}
+
+	private void OnExpandedZoomInClicked(object? sender, EventArgs e)
+	{
+		expandedZoom = Math.Min(4, expandedZoom + 0.5);
+		UpdateExpandedMapSize();
+	}
+
+	private void UpdateExpandedMapSize()
+	{
+		if (ExpandedScroller.Width <= 0 || ExpandedScroller.Height <= 0)
+			return;
+
+		var imageWidth = currentFloor == 1 ? 1290d : 1283d;
+		var imageHeight = currentFloor == 1 ? 761d : 771d;
+		var scale = Math.Min(ExpandedScroller.Width / imageWidth, ExpandedScroller.Height / imageHeight) * expandedZoom;
+		ExpandedFloorMap.WidthRequest = imageWidth * scale;
+		ExpandedFloorMap.HeightRequest = imageHeight * scale;
 	}
 
 	private void OnFloorGuideTapped(object? sender, TappedEventArgs e) =>
