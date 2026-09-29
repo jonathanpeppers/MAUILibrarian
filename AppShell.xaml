@@ -1,7 +1,8 @@
 <Shell
     x:Class="asdfadfasddf.AppShell"
     xmlns:local="clr-namespace:asdfadfasddf"
-    Title="Arcane Shelf Finder">
+    Title="Arcane Shelf Finder"
+    BackgroundColor="#18362F">
 
     <ShellContent
         Title="Shelf finder"

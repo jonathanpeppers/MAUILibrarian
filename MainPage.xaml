@@ -4,9 +4,10 @@
              x:Class="asdfadfasddf.MainPage"
              x:DataType="local:MainPage"
              Shell.NavBarIsVisible="False"
+             SafeAreaEdges="None"
              BackgroundColor="#EDF2EF">
-    <Grid RowDefinitions="Auto,Auto,*">
-        <VerticalStackLayout Padding="24,28,24,22" Spacing="8" BackgroundColor="#18362F">
+    <Grid x:Name="PageLayout" RowDefinitions="Auto,Auto,*" SafeAreaEdges="None" BackgroundColor="#EDF2EF">
+        <VerticalStackLayout x:Name="Header" Padding="24,28,24,22" Spacing="8" BackgroundColor="#18362F">
             <Label Text="THE ARCANE LIBRARY / FIELD GUIDE" FontSize="11" FontAttributes="Bold"
                    TextColor="#A9CFBA" CharacterSpacing="2" />
             <Label Text="Find its shelf." FontSize="31" FontAttributes="Bold"
