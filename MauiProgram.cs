@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 public static class MauiProgram
 {

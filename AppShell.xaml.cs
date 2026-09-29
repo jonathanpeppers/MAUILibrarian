@@ -1,4 +1,4 @@
-﻿namespace asdfadfasddf;
+﻿namespace MAUILibrarian;
 
 public partial class AppShell : Shell
 {

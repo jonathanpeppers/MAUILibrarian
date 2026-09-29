@@ -1,7 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 [Application]
 public class MainApplication : MauiApplication

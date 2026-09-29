@@ -1,7 +1,7 @@
 <Shell
-    x:Class="asdfadfasddf.AppShell"
-    xmlns:local="clr-namespace:asdfadfasddf"
-    Title="Arcane Shelf Finder"
+    x:Class="MAUILibrarian.AppShell"
+    xmlns:local="clr-namespace:MAUILibrarian"
+    Title="MAUILibrarian"
     BackgroundColor="#18362F">
 
     <ShellContent

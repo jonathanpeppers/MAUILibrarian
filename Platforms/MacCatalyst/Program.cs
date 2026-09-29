@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 public class Program
 {

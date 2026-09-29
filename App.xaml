@@ -1,5 +1,5 @@
-﻿<Application xmlns:local="clr-namespace:asdfadfasddf"
-             x:Class="asdfadfasddf.App">
+﻿<Application xmlns:local="clr-namespace:MAUILibrarian"
+             x:Class="MAUILibrarian.App">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

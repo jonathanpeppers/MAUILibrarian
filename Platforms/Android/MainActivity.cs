@@ -4,7 +4,7 @@ using Android.OS;
 using Android.Views;
 using AndroidX.Core.View;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 [Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 public class MainActivity : MauiAppCompatActivity

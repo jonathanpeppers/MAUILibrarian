@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 public partial class App : Application
 {

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace asdfadfasddf;
+namespace MAUILibrarian;
 
 public sealed record BookEntry(string Title, string Shelf, string Section, int Floor)
 {
